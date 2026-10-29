@@ -11,8 +11,34 @@ use ComBank\Bank\Contracts\BankAccountInterface;
 use ComBank\Exceptions\InvalidOverdraftFundsException;
 use ComBank\Transactions\Contracts\BankTransactionInterface;
 
-class WithdrawTransaction 
+class WithdrawTransaction extends BaseTransaction implements BankTransactionInterface
 {
+    public function __construct(float $amount)
+    {
+        $this->validateAmount($amount);
+        $this->amount = $amount;
+    }
 
+    public function applyTransaction(BankAccountInterface $bankAccount): float
+    {
+        $newBalance = $bankAccount->getBalance() - $this->amount;
+
+        // sin descubierto, el saldo no puede quedar por debajo de 0
+        if ($newBalance < 0) {
+            throw new InvalidOverdraftFundsException('Insufficient balance');
+        }
+
+        return $newBalance;
+    }
+
+    public function getTransactionInfo(): string
+    {
+        return 'WITHDRAW_TRANSACTION';
+    }
+
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
    
 }

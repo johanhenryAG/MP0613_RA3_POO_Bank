@@ -1,4 +1,5 @@
 <?php namespace ComBank\Bank;
+ 
 
 /**
  * Created by VS Code.
@@ -18,6 +19,79 @@ use ComBank\OverdraftStrategy\Contracts\OverdraftInterface;
 use ComBank\Support\Traits\AmountValidationTrait;
 use ComBank\Transactions\Contracts\BankTransactionInterface;
 
-class BankAccount
+class BankAccount implements BankAccountInterface
 {
+    //atributos
+    private float $balance;
+    private bool $status;
+    private OverdraftInterface $overdraft;
+
+
+
+
+
+
+    //constructor
+    public function __construct(float $balance)
+    {
+        $this->balance = $balance;
+        $this->status = true;
+        $this->overdraft = new NoOverdraft();
+
     }
+    //getBalance();
+    public function getBalance(): float
+    {
+        return $this->balance;
+    }
+
+    public function setBalance(float $balance): void
+    {
+        $this->balance = $balance;
+    }
+    
+    public function closeAccount(): void
+    {
+        $this->status = false;
+    }
+
+    public function reopenAccount(): void
+    {
+        if ($this->isOpen()) {
+            throw new BankAccountException('Account is already open');
+        }
+
+        $this->status = true;
+    } 
+
+    public function isOpen(): bool
+    {
+    return $this->status;
+    }
+
+
+
+    public function transaction(BankTransactionInterface $bankTransaction): void
+    {
+        if (!$this->isOpen()) {
+            throw new BankAccountException('Account is closed');
+        }
+
+        try {
+            $newBalance = $bankTransaction->applyTransaction($this);
+            $this->setBalance($newBalance);
+        } catch (InvalidOverdraftFundsException $e) {
+            throw new FailedTransactionException($e->getMessage());
+        }
+    }
+
+        public function getOverdraft() : OverdraftInterface
+    {
+        return $this->overdraft;
+    }
+
+    public function applyOverdraft(OverdraftInterface $overdraft) : void
+    {
+        $this->overdraft = $overdraft;
+    }
+}

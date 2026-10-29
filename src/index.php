@@ -20,28 +20,34 @@ require_once 'bootstrap.php';
 
 //---[Bank account 1]---/
 // create a new account1 with balance 400
+// $usuario = new Usuario("María", "maria@ejemplo.com");
+$bankAccount1 = new BankAccount(400);
+
 pl('--------- [Start testing bank account #1, No overdraft] --------');
 try {
     // show balance account
-
+    pl($bankAccount1->getBalance());
     // close account
-
+    $bankAccount1->closeAccount();
+pl('Is my account closed? ' . ($bankAccount1->isOpen() ? 'yes' : 'no'));
     // reopen account
-
+$bankAccount1->reopenAccount();
+pl('Is my account open? ' . ($bankAccount1->isOpen() ? 'yes' : 'no'));
 
     // deposit +150 
     pl('Doing transaction deposit (+150) with current balance ' . $bankAccount1->getBalance());
-
+$bankAccount1->transaction(new DepositTransaction(150));
     pl('My new balance after deposit (+150) : ' . $bankAccount1->getBalance());
 
     // withdrawal -25
     pl('Doing transaction withdrawal (-25) with current balance ' . $bankAccount1->getBalance());
-
+    $bankAccount1->transaction(new WithdrawTransaction(25));
     pl('My new balance after withdrawal (-25) : ' . $bankAccount1->getBalance());
 
     // withdrawal -600
     pl('Doing transaction withdrawal (-600) with current balance ' . $bankAccount1->getBalance());
-
+    $bankAccount1->transaction(new WithdrawTransaction(600));
+    
 } catch (ZeroAmountException $e) {
     pl($e->getMessage());
 } catch (BankAccountException $e) {
@@ -57,9 +63,11 @@ pl('My balance after failed last transaction : ' . $bankAccount1->getBalance());
 //---[Bank account 2]---/
 pl('--------- [Start testing bank account #2, Silver overdraft (100.0 funds)] --------');
 try {
+    $bankAccount2 = new BankAccount(200);
     
     // show balance account
-   
+       pl($bankAccount2->getBalance());
+
     // deposit +100
     pl('Doing transaction deposit (+100) with current balance ' . $bankAccount2->getBalance());
     
