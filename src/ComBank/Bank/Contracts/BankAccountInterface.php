@@ -27,5 +27,7 @@ interface BankAccountInterface
     public function getOverdraft(): OverdraftInterface;
     public function applyOverdraft(OverdraftInterface $overdraft): void;
     
+    public function getEmail(): string;
+    public function setEmail(string $email): void;
 }
 

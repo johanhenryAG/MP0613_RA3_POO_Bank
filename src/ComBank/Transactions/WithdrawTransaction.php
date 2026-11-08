@@ -23,8 +23,7 @@ class WithdrawTransaction extends BaseTransaction implements BankTransactionInte
     {
         $newBalance = $bankAccount->getBalance() - $this->amount;
 
-        // sin descubierto, el saldo no puede quedar por debajo de 0
-        if ($newBalance < 0) {
+        if (!$bankAccount->getOverdraft()->isGrantOverdraftFunds($newBalance)) {
             throw new InvalidOverdraftFundsException('Insufficient balance');
         }
 
