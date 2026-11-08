@@ -26,8 +26,9 @@ class BankAccount implements BankAccountInterface
     private bool $status;
     private OverdraftInterface $overdraft;
 
+    private string $email = '';
 
-
+    
 
 
 
@@ -69,6 +70,26 @@ class BankAccount implements BankAccountInterface
     return $this->status;
     }
 
+    public function getOverdraft(): OverdraftInterface
+    {
+        return $this->overdraft;
+    }
+
+    public function applyOverdraft(OverdraftInterface $overdraft): void
+    {
+        $this->overdraft = $overdraft;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
 
 
     public function transaction(BankTransactionInterface $bankTransaction): void
@@ -83,15 +104,5 @@ class BankAccount implements BankAccountInterface
         } catch (InvalidOverdraftFundsException $e) {
             throw new FailedTransactionException($e->getMessage());
         }
-    }
-
-        public function getOverdraft() : OverdraftInterface
-    {
-        return $this->overdraft;
-    }
-
-    public function applyOverdraft(OverdraftInterface $overdraft) : void
-    {
-        $this->overdraft = $overdraft;
-    }
+    }     
 }
